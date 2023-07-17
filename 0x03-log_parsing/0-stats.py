@@ -18,13 +18,6 @@ status_counts = {}
 bytes_sent_total = 0
 
 
-def handler(signum, frame):
-    """
-    Signal handler for Ctrl+C interrupt
-    """
-    print_stats()
-
-
 def parseLog(line):
     """
     Parse the line and return important metrics
@@ -55,18 +48,19 @@ def print_stats():
             print(f"{status_}: {stc}")
 
 
-signal.signal(signal.SIGINT, handler)
-
-
 if __name__ == '__main__':
-    for line in sys.stdin:
-        count += 1
-        stats = parseLog(line.rstrip())
-        if stats:
-            status = stats[0]
-            file_size = stats[1]
-            bytes_sent_total += int(file_size)
-            status_counts[status] = status_counts.get(status, 0) + 1
+    try:
+        for line in sys.stdin:
+            count += 1
+            stats = parseLog(line.rstrip())
+            if stats:
+                status = stats[0]
+                file_size = stats[1]
+                bytes_sent_total += int(file_size)
+                status_counts[status] = status_counts.get(status, 0) + 1
 
-            if count % 10 == 0:
-                print_stats()
+                if count % 10 == 0:
+                    print_stats()
+    except KeyboardInterrupt:
+        print_stats()
+        raise
