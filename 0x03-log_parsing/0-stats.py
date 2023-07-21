@@ -1,66 +1,45 @@
 #!/usr/bin/python3
-"""
-Script that reads stdin line by line and computes metrics
-about an imaginary access log file typically from services
-like Nginx
-"""
 
-import signal
-from datetime import datetime
+"""Script that reads stdin line by line and computes metrics"""
+
 import sys
-import re
 
 
-line_format = re.compile(r'(\S+) - \[(.*?)\] "(.*?)" (\d+) (\d+)')
-status_codes = [200, 301, 400, 401, 403, 404, 405, 500]
+def printsts(dic, size):
+    """ WWPrints information """
+    print("File size: {:d}".format(size))
+    for i in sorted(dic.keys()):
+        if dic[i] != 0:
+            print("{}: {:d}".format(i, dic[i]))
+
+
+sts = {"200": 0, "301": 0, "400": 0, "401": 0, "403": 0,
+       "404": 0, "405": 0, "500": 0}
+
 count = 0
-status_counts = {}
-bytes_sent_total = 0
+size = 0
+
+try:
+    for line in sys.stdin:
+        if count != 0 and count % 10 == 0:
+            printsts(sts, size)
+
+        stlist = line.split()
+        count += 1
+
+        try:
+            size += int(stlist[-1])
+        except:
+            pass
+
+        try:
+            if stlist[-2] in sts:
+                sts[stlist[-2]] += 1
+        except:
+            pass
+    printsts(sts, size)
 
 
-def parseLog(line):
-    """
-    Parse the line and return important metrics
-    """
-    # Match the line against the regular expression pattern
-    match = line_format.match(line.strip())
-
-    # If there is a match, extract the relevant fields
-    # and write them to the output file
-    if match:
-        status = match.group(4)
-        file_size = match.group(5)
-
-        if status_codes:
-            return [status, file_size]
-
-    return None
-
-
-def print_stats():
-    """
-    Print stats to the stdout
-    """
-    print(f'File size: {bytes_sent_total}')
-    for status_ in status_codes:
-        stc = status_counts.get(f"{status_}")
-        if stc:
-            print(f"{status_}: {stc}")
-
-
-if __name__ == '__main__':
-    try:
-        for line in sys.stdin:
-            count += 1
-            stats = parseLog(line.rstrip())
-            if stats:
-                status = stats[0]
-                file_size = stats[1]
-                bytes_sent_total += int(file_size)
-                status_counts[status] = status_counts.get(status, 0) + 1
-
-                if count % 10 == 0:
-                    print_stats()
-    except KeyboardInterrupt:
-        print_stats()
-        raise
+except KeyboardInterrupt:
+    printsts(sts, size)
+    raise
