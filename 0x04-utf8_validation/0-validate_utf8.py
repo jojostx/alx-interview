@@ -45,7 +45,8 @@ def validUTF8(data):
         if v > 1:
             c = i + v
             s = i + 1
-            if s >= len(data_counts):
+
+            if s >= len(data_counts) - 1:
                 is_valid = False
             while s < len(data_counts) and (s < c):
                 if data_counts[s] > 0:

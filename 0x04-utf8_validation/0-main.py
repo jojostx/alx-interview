@@ -39,3 +39,6 @@ print(validUTF8(data)) # False
 
 data = [235, 140, 4]
 print(validUTF8(data)) # False
+
+data = [235, 140]
+print(validUTF8(data)) # False
