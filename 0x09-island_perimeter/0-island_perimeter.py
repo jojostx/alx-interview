@@ -1,33 +1,38 @@
 #!/usr/bin/python3
-"""A function that returns the perimeter of the island described in grid"""
+"""
+defines a function island_perimeter
+"""
 
 
 def island_perimeter(grid):
-    """This function will take a list of list of integers and use
-       that to calculate how the perimeter of the island described in grid
     """
-    perimeter = 0
-
-    nc = len(grid)
-    for i in range(nc):
-        nr = len(grid[i])
-        for j in range(nr):
-            if grid[i][j] == 1:
-                above = i - 1
-                left = j - 1
-                right = j + 1
-                below = i + 1
-
-                if above < 0 or grid[above][j] != 1:
-                    perimeter += 1
-
-                if left < 0 or grid[i][left] != 1:
-                    perimeter += 1
-
-                if right > nr or grid[i][right] != 1:
-                    perimeter += 1
-
-                if below > nc or grid[below][j] != 1:
-                    perimeter += 1
-
-    return perimeter
+    Returns the Area of an island defines in grid
+    """
+    len_grid = len(grid)
+    length1 = 0  # Used to count the length of the island
+    length2 = 0  # Holds the length of the island
+    width1 = 0  # Use to count the width of the island
+    width2 = 0  # Holds the width of the island
+    # counts the length of the grid
+    for i in range(len_grid):
+        if i > len(grid[i]) - 1:
+            break
+        for z in range(len_grid):
+            if grid[z][i] == 1:
+                length1 += 1
+                if z != len_grid - 1 and grid[z + 1][i] == 0:
+                    break
+        if length1 > length2:
+            length2 = length1
+        length1 = 0
+    # counts the width of the grid
+    for i in range(len_grid):
+        for z in range(len(grid[i])):
+            if grid[i][z] == 1:
+                width1 += 1
+                if z != (len(grid[i]) - 1) and grid[i][z + 1] == 0:
+                    break
+        if width1 > width2:
+            width2 = width1
+        width1 = 0
+    return ((length2 * 2) + (width2 * 2))
